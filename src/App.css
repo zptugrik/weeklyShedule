@@ -17,9 +17,11 @@ body {
 }
 
 .cellBorder {
-  border: 1px solid #999;
+  border: 1px solid #999 !important;
+}
+.cell{
+  background-color: white;
   float: left;
-  font-size: 21px;
   line-height: 34px;
   height: 34px;
   margin-right: -1px;
@@ -27,9 +29,8 @@ body {
   padding: 0;
   text-align: center;
   width: 34px;
-  background-color: white;}
-
-.cellBorder:focus {
+}
+.cell:focus{
   outline: none;
 }
 
@@ -40,3 +41,22 @@ body {
 .greyBack {
   background-color: #e4e4e4;
 }
+
+.cellLeftBorder{
+  width: 51px;
+  border-color: #999;
+  border-style: solid;
+  border-width: 0px 0px 0px 1px;
+  text-align: left;
+  line-height: 1.1;
+  font-size: 12px;
+  color: #888888;
+}
+.smallFont{
+  font-size: 12px;
+  line-height: 14px;
+}
+.blackBackground{
+  background-color: #000000;
+}
+

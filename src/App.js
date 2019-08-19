@@ -20,6 +20,8 @@ class App extends Component {
 
     componentWillMount(){
         this.setState({week: this.importEntryData(this.entryData)});
+        this.setState({mouseStateDown: false });
+        this.setState({isOnMouseOverHandleAllowed: false });
     }
 
     importEntryData = (entryData) => {
@@ -65,15 +67,23 @@ class App extends Component {
             }
             return false;
         });
-        console.log(this.entryData[day.dayName]);
     };
 
     markHour = (dayName, hourId) => {
+        if(!this.state.mouseStateDown){return;}
         this.setState({week: this.state.week.map(day => {
             if(day.dayName === dayName){
                 day.hours.map(hour => {
                     if(hour.id === hourId){
-                        hour.marked = !hour.marked;
+                        if(!this.state.isOnMouseOverHandleAllowed){
+                            if(!hour.marked){
+                                this.setState({isOnMouseOverHandleAllowed: true});
+                            }
+                            hour.marked = !hour.marked;
+                        }
+                        else{
+                            hour.marked = true;
+                        }
                     }
                     return hour;
                 });
@@ -83,8 +93,31 @@ class App extends Component {
         })});
     }
 
+    markAllDay = (dayName) => {
+        let markValue = false;
+        this.setState({week: this.state.week.map(day => {
+                if(day.dayName === dayName){
+                    // check what we have to do mark or unmark all day
+                    if(day.hours.find((hour) => {
+                        return !hour.marked;
+                    })){ markValue = true;}
+                    // all day mark perform
+                    day.hours.map(hour => {
+                            hour.marked = markValue;
+                        return hour;
+                    });
+                    this.exportDayData(day);
+                }
+                return day;
+            })});
+    }
+
     getDay = (day) => {
-        return (<Day key={day.dayName} day={day}  markHour= {this.markHour}/>);
+        return (<Day key={day.dayName} day={day}
+                     toggleState={this.toggleState}
+                     onMouseOver= {this.onMouseOver}
+                     markAllDay={this.markAllDay}/>
+        );
     }
 
     getDayRow = () => {
@@ -93,10 +126,30 @@ class App extends Component {
         });
     }
 
+    getHoursTitle = () => {
+        return Array.apply(null, Array(8)).map((value, hourId) => {
+            return <div className="cell cellLeftBorder" key={hourId}><pre>{hourId * 3}.00</pre></div>
+        });
+    }
+
+    toggleState = (dayName, hourId) => {
+        this.setState({mouseStateDown: hourId !== -1}, () => {this.markHour(dayName, hourId)});
+        if(hourId === -1){this.setState({isOnMouseOverHandleAllowed: false});}
+    }
+
+    onMouseOver = (dayName, hourId) => {
+        if(this.state.isOnMouseOverHandleAllowed){this.markHour(dayName, hourId)}
+    }
+
     render() {
         return (
-            <div className="App">
+            <div className="App" onMouseUp={this.toggleState.bind(this, null, -1)}>
                 <div className="title"><h2>WEEKLY SHEDULE</h2></div>
+                <div className="row">
+                    <div className="cell"></div>
+                    <div className="cell smallFont">ALL<br/>DAY</div>
+                    {this.getHoursTitle()}
+                </div>
                 {this.getDayRow()}
             </div>
         );
