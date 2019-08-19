@@ -5,7 +5,11 @@ import Day from './components/Day.js';
 class App extends Component {
     constructor(props){
         super(props);
-        this.state = {};
+        this.state = {
+            week: this.importEntryData(this.entryData),
+            mouseStateDown: false,
+            isOnMouseOverHandleAllowed: false
+        };
     }
 
     entryData = {
@@ -16,12 +20,6 @@ class App extends Component {
         "fr": [{"bt": 660, "et": 1019}],
         "sa": [{"bt": 0, "et": 1439}],
         "su": []
-    }
-
-    componentWillMount(){
-        this.setState({week: this.importEntryData(this.entryData)});
-        this.setState({mouseStateDown: false });
-        this.setState({isOnMouseOverHandleAllowed: false });
     }
 
     importEntryData = (entryData) => {
@@ -42,6 +40,7 @@ class App extends Component {
             finalData.push({dayName: dayName, hours: hours});
             return false;
         });
+        this.showResultData();
         return finalData;
     }
 
@@ -67,8 +66,19 @@ class App extends Component {
             }
             return false;
         });
+        this.showResultData();
     };
 
+    showResultData = () => {
+        document.getElementsByClassName("showResult")[0].innerText = 'MO\n' + JSON.stringify(this.entryData['mo'], undefined, 4);
+        document.getElementsByClassName("showResult")[1].innerText = 'TU\n' + JSON.stringify(this.entryData['tu'], undefined, 4);
+        document.getElementsByClassName("showResult")[2].innerText = 'WE\n' + JSON.stringify(this.entryData['we'], undefined, 4);
+        document.getElementsByClassName("showResult")[3].innerText = 'TH\n' + JSON.stringify(this.entryData['th'], undefined, 4);
+        document.getElementsByClassName("showResult")[4].innerText = 'FR\n' + JSON.stringify(this.entryData['fr'], undefined, 4);
+        document.getElementsByClassName("showResult")[5].innerText = 'SA\n' + JSON.stringify(this.entryData['sa'], undefined, 4);
+        document.getElementsByClassName("showResult")[6].innerText = 'SU\n' + JSON.stringify(this.entryData['su'], undefined, 4);
+
+    }
     markHour = (dayName, hourId) => {
         if(!this.state.mouseStateDown){return;}
         this.setState({week: this.state.week.map(day => {
